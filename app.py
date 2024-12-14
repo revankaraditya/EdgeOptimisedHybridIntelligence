@@ -13,6 +13,7 @@ import whisper
 import sounddevice as sd
 import numpy as np
 import wave
+import os
 
 app = Flask(__name__)
 
@@ -23,8 +24,9 @@ AUDIO_DATA = []
 RECOGNITION_THRESHOLD = 0.5  # Adjust based on environment
 
 # Load Whisper model once (offline)
-whisper_model = whisper.load_model("base")
+whisper_model = whisper.load_model("small")
 
+VECTOR_STORAGE_PATH = "db"
 
 folder_path = "db"
 
@@ -127,6 +129,32 @@ def pdfPost():
     return response
 
 
+@app.route('/admin/')
+def about():
+    return render_template('admin.html')
+
+@app.route('/delete-vector-storage', methods=['POST'])
+def delete_vector_storage():
+    try:
+        # Check if the folder exists
+        if os.path.exists(VECTOR_STORAGE_PATH):
+            # Remove all files and subdirectories within the folder
+            for root, dirs, files in os.walk(VECTOR_STORAGE_PATH, topdown=False):
+                for file in files:
+                    os.remove(os.path.join(root, file))
+                for dir in dirs:
+                    os.rmdir(os.path.join(root, dir))
+
+            # Remove the folder itself
+            os.rmdir(VECTOR_STORAGE_PATH)
+
+            return jsonify({"status": "success", "message": "Vector storage deleted successfully."}), 200
+        else:
+            return jsonify({"status": "error", "message": "Vector storage does not exist."}), 404
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
 def normal_query(query):
     print(f"Normal")
     response = cached_llm.invoke(query)
@@ -145,8 +173,8 @@ def rag_query(query):
     retriever = vector_store.as_retriever(
         search_type="similarity_score_threshold",
         search_kwargs={
-            "k": 2,
-            "score_threshold": 0.5,
+            "k": 4,
+            "score_threshold": 0.3,
         },
     )
 
@@ -181,7 +209,7 @@ def is_college_related(query):
         "fees", "research", "paper", "papers", "conference", "mentor",
         "tutor", "lab", "labs", "labwork", "practical", "practicals",
         "dorm", "hostel", "study", "studies", "classroom", "quiz", "kls git", "admission",
-        "intake", "kls"
+        "intake", "kls", "#", "placement"
     }
     if any(keyword in query.lower() for keyword in college_keywords):
         return True

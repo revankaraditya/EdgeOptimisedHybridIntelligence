@@ -5,9 +5,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Campus AI</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet"> -->
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> -->
+    <link rel="stylesheet" href="..\static\fontawesome\css\all.css">
     <style>
+        /* inter-regular - latin */
+        @font-face {
+            font-display: swap;
+            /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 400;
+            src: url('..\\static\\inter-v18-latin\\inter-v18-latin-regular.woff2') format('woff2');
+            /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+        }
+
         :root {
             --background-primary: #0f1020;
             --text-primary: #e6e6e6;
@@ -288,6 +300,10 @@
                         <i class="fa-solid fa-rotate"></i>
                     </button>
                 </div>
+                <nav>
+                    <button class="secondary-button" onclick="navigateTo('/admin')"><i
+                            class="fa-duotone fa-solid fa-user"></i></button>
+                </nav>
             </div>
         </div>
 
@@ -373,7 +389,7 @@
 
                     if (state === "off") {
                         createMessage(responseText, 'user-message');
-                        createMessage('Typing...', 'bot-message');
+                        createMessage('...', 'bot-message');
 
                         // Send a request to /ai with the server response text
                         const response1 = await fetch('/ai', {
@@ -418,6 +434,9 @@
 
         function refreshPage() {
             location.reload(); // Reloads the current page
+        }
+        function navigateTo(page) {
+            window.location.href = page;
         }
     </script>
 </body>
