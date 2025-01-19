@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Campus AI</title>
+    <!-- <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet"> -->
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> -->
+    <link rel="stylesheet" href="..\static\fontawesome\css\all.css">
+    <style>
+        /* inter-regular - latin */
+        @font-face {
+            font-display: swap;
+            /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 400;
+            src: url('..\\static\\inter-v18-latin\\inter-v18-latin-regular.woff2') format('woff2');
+            /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+        }
+
+        :root {
+            --background-primary: #0f1020;
+            --text-primary: #e6e6e6;
+            --text-accent: #4ecdc4;
+            --border-color: rgba(78, 205, 196, 0.3);
+            --shadow-color: rgba(78, 205, 196, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--background-primary), #121530);
+            color: var(--text-primary);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            perspective: 1000px;
+        }
+
+        .interface-container {
+            width: 95%;
+            max-width: 700px;
+            height: 90vh;
+            max-height: 800px;
+            background: linear-gradient(145deg, rgba(15, 16, 32, 0.9), rgba(18, 21, 48, 0.9));
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            box-shadow:
+                0 25px 50px rgba(0, 0, 0, 0.2),
+                0 0 50px var(--shadow-color);
+            border: 1px solid var(--border-color);
+            transform: translateZ(20px);
+        }
+
+        .interface-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: linear-gradient(to right, rgba(78, 205, 196, 0.05), transparent);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .interface-header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-accent);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .system-status {
+            font-size: 0.75rem;
+            color: #84fd00;
+            opacity: 0.7;
+            background: rgba(78, 205, 196, 0.1);
+            padding: 5px 10px;
+            border-radius: 16px;
+        }
+
+        #chatbox {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            scrollbar-width: thin;
+        }
+
+        #chatbox::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #chatbox::-webkit-scrollbar-thumb {
+            background: var(--text-accent);
+            border-radius: 3px;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            position: relative;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: messageAnimation 0.5s ease forwards;
+        }
+
+        @keyframes messageAnimation {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .user-message {
+            align-self: flex-end;
+            background: linear-gradient(135deg, rgba(78, 205, 196, 0.2), rgba(78, 205, 196, 0.1));
+            color: var(--text-accent);
+            border: 1px solid var(--border-color);
+            margin-left: auto;
+        }
+
+        .bot-message {
+            align-self: flex-start;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .input-area {
+            display: flex;
+            gap: 10px;
+            /* Space between elements */
+            padding: 20px;
+            background: linear-gradient(to top, rgba(15, 16, 32, 0.9), transparent);
+            border-top: 1px solid var(--border-color);
+            align-items: center;
+            /* Align items vertically */
+        }
+
+        .input-area input {
+            flex: 1;
+            /* Makes the input field take the remaining width */
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 12px 16px;
+            border-radius: 20px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .input-area input:focus {
+            outline: none;
+            border-color: var(--text-accent);
+            box-shadow: 0 0 0 3px rgba(78, 205, 196, 0.1);
+        }
+
+        /* .input-area button {
+            background: linear-gradient(135deg, var(--text-accent), #45b7aa);
+            color: var(--background-primary);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .input-area button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px var(--shadow-color);
+        } */
+
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.03;
+            background-image:
+                linear-gradient(0deg, transparent 0%, rgba(78, 205, 196, 0.05) 50%, transparent 100%),
+                linear-gradient(90deg, transparent 0%, rgba(78, 205, 196, 0.03) 50%, transparent 100%);
+            z-index: 1;
+        }
+
+        @media (max-width: 600px) {
+            .interface-container {
+                width: 98%;
+                height: 95vh;
+                max-height: none;
+            }
+        }
+
+        .primary-button {
+            background: linear-gradient(135deg, #4ecdc4, #45b7aa);
+            color: #0f1020;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .primary-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(78, 205, 196, 0.2);
+        }
+
+        /* Secondary Button Style */
+        .secondary-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            background: transparent;
+            border: 2px solid #4ecdc4;
+            color: #4ecdc4;
+            padding: 10px 22px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .secondary-button:hover {
+            background: rgba(78, 205, 196, 0.1);
+            color: #ffffff;
+        }
+
+        .secondary-button i {
+            font-size: 1.2rem;
+            /* Adjust icon size */
+        }
+
+        .status-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            /* Space between ACTIVE and refresh button */
+        }
+
+        .refresh-button {
+            background: transparent;
+            border: none;
+            color: var(--text-accent);
+            font-size: 1.2rem;
+            /* Icon size */
+            cursor: pointer;
+            transition: transform 0.3s ease, color 0.3s ease;
+        }
+
+        .refresh-button:hover {
+            color: #ffffff;
+            transform: rotate(90deg);
+            /* Rotate icon on hover */
+        }
+
+        .refresh-button:focus {
+            outline: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="interface-container">
+        <div class="grid-overlay"></div>
+
+        <div class="interface-header">
+            <div class="header-content">
+                <h1>Smart Campus AI</h1>
+                <div class="status-container">
+                    <div class="system-status">ACTIVE</div>
+                    <button id="refreshButton" class="refresh-button" onclick="refreshPage()">
+                        <i class="fa-solid fa-rotate"></i>
+                    </button>
+                </div>
+                <nav>
+                    <button class="secondary-button" onclick="navigateTo('/admin')"><i
+                            class="fa-duotone fa-solid fa-user"></i></button>
+                </nav>
+            </div>
+        </div>
+
+        <div id="chatbox"></div>
+        <div class="input-area">
+            <input type="text" id="query" placeholder="Enter your command..." autocomplete="off">
+            <button id="micToggle" class="secondary-button">
+                <i class="fa-solid fa-microphone-slash"></i>
+            </button>
+            <button class="primary-button" onclick="sendMessage()">SEND</button>
+        </div>
+    </div>
+
+    <script>
+        const chatbox = document.getElementById('chatbox');
+
+        function createMessage(content, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.innerText = content;
+            chatbox.appendChild(messageDiv);
+            chatbox.scrollTop = chatbox.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const queryInput = document.getElementById('query');
+            const query = queryInput.value.trim();
+            if (!query) return;
+
+            createMessage(query, 'user-message');
+            queryInput.value = '';
+
+            createMessage('...', 'bot-message');
+
+            const response = await fetch('/ai', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query })
+            });
+            const answer = await response.text();
+
+            // Remove processing message
+            chatbox.removeChild(chatbox.lastChild);
+            createMessage(answer, 'bot-message');
+        }
+
+        //For microphone
+        const button = document.getElementById('micToggle');
+        const micOffIcon = 'fa-solid fa-microphone-slash';
+        const micOnIcon = 'fa-solid fa-microphone';
+
+        window.onload = () => {
+            button.classList.add('off'); // Set initial state
+        };
+
+        // Function to send a request to the server
+        const sendRequest = async (state) => {
+            let response; // Declare response variable outside of conditions
+
+            try {
+                // Check the state and send the corresponding request
+                if (state === "on") {
+                    response = await fetch('/start', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    });
+                } else if (state === "off") {
+                    response = await fetch('/stop', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    });
+                }
+
+                // Check if the response is ok and log the response
+                if (response && response.ok) {
+                    const responseText = await response.text();
+                    const query = responseText;
+                    console.log(`Server response: ${responseText}`);
+
+                    if (state === "off") {
+                        createMessage(responseText, 'user-message');
+                        createMessage('...', 'bot-message');
+
+                        // Send a request to /ai with the server response text
+                        const response1 = await fetch('/ai', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ query }),
+                        });
+                        const answer = await response1.text();
+
+                        // Remove processing message
+                        if (chatbox) {
+                            chatbox.removeChild(chatbox.lastChild);
+                        }
+
+                        createMessage(answer, 'bot-message');
+                    }
+                } else {
+                    console.error(`Error: ${response ? response.status : 'No response'}`);
+                }
+            } catch (error) {
+                console.error('Network error:', error);
+            }
+        };
+
+
+
+        button.addEventListener('click', () => {
+            const icon = button.querySelector('i');
+
+            if (button.classList.contains('off')) {
+                button.classList.remove('off');
+                button.classList.add('on');
+                icon.className = micOnIcon; // Switch to microphone icon
+                sendRequest('on'); // Send "on" state to the server
+            } else {
+                button.classList.remove('on');
+                button.classList.add('off');
+                icon.className = micOffIcon; // Switch to microphone-slash icon
+                sendRequest('off'); // Send "off" state to the server
+            }
+        });
+
+        function refreshPage() {
+            location.reload(); // Reloads the current page
+        }
+        function navigateTo(page) {
+            window.location.href = page;
+        }
+    </script>
+</body>
+
+</html>

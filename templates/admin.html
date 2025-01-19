@@ -5,25 +5,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PDF Upload</title>
-    <!-- <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet"> -->
     <link rel="stylesheet" href="..\static\fontawesome\css\all.css">
     <style>
         @font-face {
             font-display: swap;
-            /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
             font-family: 'Inter';
             font-style: normal;
             font-weight: 400;
             src: url('..\\static\\inter-v18-latin\\inter-v18-latin-regular.woff2') format('woff2');
-            /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
         }
 
         :root {
-            --background-primary: #0f1020;
-            --text-primary: #e6e6e6;
-            --text-accent: #4ecdc4;
-            --border-color: rgba(78, 205, 196, 0.3);
-            --shadow-color: rgba(78, 205, 196, 0.2);
+            --background-primary: #f4f6f9;
+            --text-primary: #1a1a2e;
+            --text-accent: #0a7c6c;
+            --border-color: rgba(10, 124, 108, 0.3);
+            --shadow-color: rgba(10, 124, 108, 0.2);
         }
 
         * {
@@ -34,7 +31,7 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, var(--background-primary), #121530);
+            background: linear-gradient(135deg, var(--background-primary), #e6eaf0);
             color: var(--text-primary);
             height: 100vh;
             display: flex;
@@ -47,11 +44,11 @@
         .container {
             width: 95%;
             max-width: 700px;
-            background: linear-gradient(145deg, rgba(15, 16, 32, 0.9), rgba(18, 21, 48, 0.9));
+            background: linear-gradient(145deg, rgba(244, 246, 249, 0.9), rgba(230, 234, 240, 0.9));
             border-radius: 24px;
             padding: 20px;
             box-shadow:
-                0 25px 50px rgba(0, 0, 0, 0.2),
+                0 25px 50px rgba(0, 0, 0, 0.1),
                 0 0 50px var(--shadow-color);
             border: 1px solid var(--border-color);
         }
@@ -75,13 +72,13 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #4ecdc4, #45b7aa);
-            color: #0f1020;
+            background: linear-gradient(135deg, #0a7c6c, #00695c);
+            color: #ffffff;
         }
 
         .btn-primary:hover {
             transform: scale(1.05);
-            box-shadow: 0 10px 20px var(--shadow-color);
+            box-shadow: 0 10px 20px rgba(10, 124, 108, 0.2);
         }
 
         .btn-danger {
@@ -112,49 +109,50 @@
         }
 
         .nav-btn:hover {
-            background: rgba(78, 205, 196, 0.1);
-            color: #ffffff;
+            background: rgba(10, 124, 108, 0.1);
+            color: #0a7c6c;
         }
 
         #loading {
             display: none;
             text-align: center;
             margin-top: 20px;
+            color: var(--text-primary);
         }
 
         #responseText {
             max-height: 300px;
             overflow-y: auto;
+            background: rgba(0, 0, 0, 0.05);
+            color: var(--text-primary);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .form-label {
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+
+        .form-control {
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: var(--text-primary);
+            padding: 10px;
+            border-radius: 10px;
+            width: 100%;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--text-accent);
+            box-shadow: 0 0 0 3px rgba(10, 124, 108, 0.1);
         }
     </style>
 </head>
 
 <body>
-    <!-- <div class="container" id="mainContainer">
-        <h1 class="text-center">PDF Upload</h1>
-        <form id="pdfUploadForm" class="mt-4" enctype="multipart/form-data">
-            <div class="mb-3">
-                <label for="fileInput" class="form-label">Select PDF File:</label>
-                <input type="file" class="form-control" id="fileInput" name="file" accept="application/pdf" required>
-            </div>
-            <div class="d-grid gap-2">
-                <button type="submit" class="btn btn-primary">Upload PDF</button>
-            </div>
-        </form>
-
-        <div id="loading">
-            <p>Please wait, processing...</p>
-        </div>
-
-        <div class="d-grid gap-2 mt-3">
-            <button id="deleteStorageButton" class="btn btn-danger">Delete Vector Storage</button>
-        </div>
-
-        <div id="responseContainer" class="mt-4" style="display: none;">
-            <h3 class="text-center">Response</h3>
-            <pre id="responseText" class="bg-light p-3 border rounded"></pre>
-        </div>
-    </div> -->
     <div class="container">
         <h1>PDF Upload</h1>
         <form id="pdfUploadForm" enctype="multipart/form-data">
@@ -241,7 +239,6 @@
 
                 responseText.textContent = JSON.stringify(responseData, null, 2);
                 responseContainer.style.display = 'block';
-                // alert(`Response: ${JSON.stringify(responseData)}`);
             } catch (error) {
                 alert(`An error occurred: ${error.message}`);
             } finally {

@@ -5,27 +5,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Campus AI</title>
-    <!-- <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet"> -->
-    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> -->
     <link rel="stylesheet" href="..\static\fontawesome\css\all.css">
     <style>
         /* inter-regular - latin */
         @font-face {
             font-display: swap;
-            /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
             font-family: 'Inter';
             font-style: normal;
             font-weight: 400;
             src: url('..\\static\\inter-v18-latin\\inter-v18-latin-regular.woff2') format('woff2');
-            /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
         }
 
         :root {
-            --background-primary: #0f1020;
-            --text-primary: #e6e6e6;
-            --text-accent: #4ecdc4;
-            --border-color: rgba(78, 205, 196, 0.3);
-            --shadow-color: rgba(78, 205, 196, 0.2);
+            --background-primary: #f4f6f9;
+            --text-primary: #1a1a2e;
+            --text-accent: #0a7c6c;
+            --border-color: rgba(10, 124, 108, 0.3);
+            --shadow-color: rgba(10, 124, 108, 0.2);
         }
 
         * {
@@ -36,7 +32,7 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, var(--background-primary), #121530);
+            background: linear-gradient(135deg, var(--background-primary), #e6eaf0);
             color: var(--text-primary);
             height: 100vh;
             display: flex;
@@ -51,14 +47,14 @@
             max-width: 700px;
             height: 90vh;
             max-height: 800px;
-            background: linear-gradient(145deg, rgba(15, 16, 32, 0.9), rgba(18, 21, 48, 0.9));
+            background: linear-gradient(145deg, rgba(244, 246, 249, 0.9), rgba(230, 234, 240, 0.9));
             border-radius: 24px;
             display: flex;
             flex-direction: column;
             position: relative;
             overflow: hidden;
             box-shadow:
-                0 25px 50px rgba(0, 0, 0, 0.2),
+                0 25px 50px rgba(0, 0, 0, 0.1),
                 0 0 50px var(--shadow-color);
             border: 1px solid var(--border-color);
             transform: translateZ(20px);
@@ -69,7 +65,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 20px;
-            background: linear-gradient(to right, rgba(78, 205, 196, 0.05), transparent);
+            background: linear-gradient(to right, rgba(10, 124, 108, 0.05), transparent);
             border-bottom: 1px solid var(--border-color);
         }
 
@@ -89,9 +85,9 @@
 
         .system-status {
             font-size: 0.75rem;
-            color: #84fd00;
+            color: #007a5a;
             opacity: 0.7;
-            background: rgba(78, 205, 196, 0.1);
+            background: rgba(10, 124, 108, 0.1);
             padding: 5px 10px;
             border-radius: 16px;
         }
@@ -136,7 +132,7 @@
 
         .user-message {
             align-self: flex-end;
-            background: linear-gradient(135deg, rgba(78, 205, 196, 0.2), rgba(78, 205, 196, 0.1));
+            background: linear-gradient(135deg, rgba(10, 124, 108, 0.1), rgba(10, 124, 108, 0.05));
             color: var(--text-accent);
             border: 1px solid var(--border-color);
             margin-left: auto;
@@ -144,27 +140,24 @@
 
         .bot-message {
             align-self: flex-start;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.02));
             color: var(--text-primary);
-            border: 1px solid var(--border-color);
+            border: 1px solid rgba(0, 0, 0, 0.1);
         }
 
         .input-area {
             display: flex;
             gap: 10px;
-            /* Space between elements */
             padding: 20px;
-            background: linear-gradient(to top, rgba(15, 16, 32, 0.9), transparent);
+            background: linear-gradient(to top, rgba(244, 246, 249, 0.9), transparent);
             border-top: 1px solid var(--border-color);
             align-items: center;
-            /* Align items vertically */
         }
 
         .input-area input {
             flex: 1;
-            /* Makes the input field take the remaining width */
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-color);
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
             color: var(--text-primary);
             padding: 12px 16px;
             border-radius: 20px;
@@ -175,24 +168,8 @@
         .input-area input:focus {
             outline: none;
             border-color: var(--text-accent);
-            box-shadow: 0 0 0 3px rgba(78, 205, 196, 0.1);
+            box-shadow: 0 0 0 3px rgba(10, 124, 108, 0.1);
         }
-
-        /* .input-area button {
-            background: linear-gradient(135deg, var(--text-accent), #45b7aa);
-            color: var(--background-primary);
-            border: none;
-            padding: 12px 24px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .input-area button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 10px 20px var(--shadow-color);
-        } */
 
         .grid-overlay {
             position: absolute;
@@ -201,10 +178,10 @@
             width: 100%;
             height: 100%;
             pointer-events: none;
-            opacity: 0.03;
+            opacity: 0.02;
             background-image:
-                linear-gradient(0deg, transparent 0%, rgba(78, 205, 196, 0.05) 50%, transparent 100%),
-                linear-gradient(90deg, transparent 0%, rgba(78, 205, 196, 0.03) 50%, transparent 100%);
+                linear-gradient(0deg, transparent 0%, rgba(10, 124, 108, 0.03) 50%, transparent 100%),
+                linear-gradient(90deg, transparent 0%, rgba(10, 124, 108, 0.02) 50%, transparent 100%);
             z-index: 1;
         }
 
@@ -217,8 +194,8 @@
         }
 
         .primary-button {
-            background: linear-gradient(135deg, #4ecdc4, #45b7aa);
-            color: #0f1020;
+            background: linear-gradient(135deg, #0a7c6c, #00695c);
+            color: #ffffff;
             border: none;
             padding: 12px 24px;
             border-radius: 20px;
@@ -229,18 +206,17 @@
 
         .primary-button:hover {
             transform: scale(1.05);
-            box-shadow: 0 10px 20px rgba(78, 205, 196, 0.2);
+            box-shadow: 0 10px 20px rgba(10, 124, 108, 0.2);
         }
 
-        /* Secondary Button Style */
         .secondary-button {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 5px;
             background: transparent;
-            border: 2px solid #4ecdc4;
-            color: #4ecdc4;
+            border: 2px solid #0a7c6c;
+            color: #0a7c6c;
             padding: 10px 22px;
             border-radius: 20px;
             cursor: pointer;
@@ -249,20 +225,18 @@
         }
 
         .secondary-button:hover {
-            background: rgba(78, 205, 196, 0.1);
-            color: #ffffff;
+            background: rgba(10, 124, 108, 0.1);
+            color: #0a7c6c;
         }
 
         .secondary-button i {
             font-size: 1.2rem;
-            /* Adjust icon size */
         }
 
         .status-container {
             display: flex;
             align-items: center;
             gap: 10px;
-            /* Space between ACTIVE and refresh button */
         }
 
         .refresh-button {
@@ -270,15 +244,13 @@
             border: none;
             color: var(--text-accent);
             font-size: 1.2rem;
-            /* Icon size */
             cursor: pointer;
             transition: transform 0.3s ease, color 0.3s ease;
         }
 
         .refresh-button:hover {
-            color: #ffffff;
+            color: #00695c;
             transform: rotate(90deg);
-            /* Rotate icon on hover */
         }
 
         .refresh-button:focus {
@@ -350,6 +322,13 @@
             createMessage(answer, 'bot-message');
         }
 
+        document.getElementById('query').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+        sendMessage();
+    }
+});
+
+
         //For microphone
         const button = document.getElementById('micToggle');
         const micOffIcon = 'fa-solid fa-microphone-slash';
@@ -413,8 +392,6 @@
                 console.error('Network error:', error);
             }
         };
-
-
 
         button.addEventListener('click', () => {
             const icon = button.querySelector('i');

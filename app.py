@@ -133,6 +133,7 @@ def pdfPost():
 def about():
     return render_template('admin.html')
 
+
 @app.route('/delete-vector-storage', methods=['POST'])
 def delete_vector_storage():
     try:
@@ -174,7 +175,7 @@ def rag_query(query):
         search_type="similarity_score_threshold",
         search_kwargs={
             "k": 4,
-            "score_threshold": 0.3,
+            "score_threshold": 0.2,
         },
     )
 
@@ -225,6 +226,7 @@ def save_audio(filename, audio_data):
         wf.setframerate(SAMPLE_RATE)
         wf.writeframes((audio_data * 32767).astype(np.int16).tobytes())
 
+
 def record_audio():
     """Record audio until stopped."""
     global RECORDING, AUDIO_DATA
@@ -237,6 +239,7 @@ def record_audio():
     with sd.InputStream(samplerate=SAMPLE_RATE, channels=1, callback=audio_callback):
         while RECORDING:
             sd.sleep(100)  # Sleep to avoid busy-waiting
+
 
 def transcribe_and_execute(filename):
     """Transcribe the recorded audio and execute actions based on transcription."""

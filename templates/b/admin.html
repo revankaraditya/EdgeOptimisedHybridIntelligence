@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Upload</title>
+    <!-- <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet"> -->
+    <link rel="stylesheet" href="..\static\fontawesome\css\all.css">
+    <style>
+        @font-face {
+            font-display: swap;
+            /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 400;
+            src: url('..\\static\\inter-v18-latin\\inter-v18-latin-regular.woff2') format('woff2');
+            /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+        }
+
+        :root {
+            --background-primary: #0f1020;
+            --text-primary: #e6e6e6;
+            --text-accent: #4ecdc4;
+            --border-color: rgba(78, 205, 196, 0.3);
+            --shadow-color: rgba(78, 205, 196, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--background-primary), #121530);
+            color: var(--text-primary);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            perspective: 1000px;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 700px;
+            background: linear-gradient(145deg, rgba(15, 16, 32, 0.9), rgba(18, 21, 48, 0.9));
+            border-radius: 24px;
+            padding: 20px;
+            box-shadow:
+                0 25px 50px rgba(0, 0, 0, 0.2),
+                0 0 50px var(--shadow-color);
+            border: 1px solid var(--border-color);
+        }
+
+        h1 {
+            color: var(--text-accent);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4ecdc4, #45b7aa);
+            color: #0f1020;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px var(--shadow-color);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff6b6b, #ee5253);
+            color: #ffffff;
+        }
+
+        .btn-danger:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(255, 107, 107, 0.2);
+        }
+
+        nav {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: 2px solid var(--text-accent);
+            color: var(--text-accent);
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin: 0 10px;
+        }
+
+        .nav-btn:hover {
+            background: rgba(78, 205, 196, 0.1);
+            color: #ffffff;
+        }
+
+        #loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        #responseText {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- <div class="container" id="mainContainer">
+        <h1 class="text-center">PDF Upload</h1>
+        <form id="pdfUploadForm" class="mt-4" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label for="fileInput" class="form-label">Select PDF File:</label>
+                <input type="file" class="form-control" id="fileInput" name="file" accept="application/pdf" required>
+            </div>
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary">Upload PDF</button>
+            </div>
+        </form>
+
+        <div id="loading">
+            <p>Please wait, processing...</p>
+        </div>
+
+        <div class="d-grid gap-2 mt-3">
+            <button id="deleteStorageButton" class="btn btn-danger">Delete Vector Storage</button>
+        </div>
+
+        <div id="responseContainer" class="mt-4" style="display: none;">
+            <h3 class="text-center">Response</h3>
+            <pre id="responseText" class="bg-light p-3 border rounded"></pre>
+        </div>
+    </div> -->
+    <div class="container">
+        <h1>PDF Upload</h1>
+        <form id="pdfUploadForm" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label for="fileInput" class="form-label">Select PDF File:</label>
+                <input type="file" class="form-control" id="fileInput" name="file" accept="application/pdf" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Upload PDF</button>
+        </form>
+        <div id="loading">
+            <p>Please wait, processing...</p>
+        </div>
+        <button id="deleteStorageButton" class="btn btn-danger">Delete Vector Storage</button>
+        <nav>
+            <button class="nav-btn" onclick="navigateTo('/')"><i class="fa-solid fa-house"></i></button>
+        </nav>
+        <div id="responseContainer" class="mt-4" style="display: none;">
+            <h3 class="text-center">Response</h3>
+            <pre id="responseText" class="bg-light p-3 border rounded"></pre>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('pdfUploadForm').addEventListener('submit', async (event) => {
+            event.preventDefault(); // Prevent form from submitting the traditional way
+
+            const formData = new FormData();
+            const fileInput = document.getElementById('fileInput');
+
+            if (fileInput.files.length === 0) {
+                alert('Please select a file.');
+                return;
+            }
+
+            formData.append('file', fileInput.files[0]);
+
+            document.getElementById('loading').style.display = 'block';
+
+            try {
+                const response = await fetch('/pdf', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const responseData = await response.json();
+
+                // Display the response
+                const responseContainer = document.getElementById('responseContainer');
+                const responseText = document.getElementById('responseText');
+
+                responseText.textContent = JSON.stringify(responseData, null, 2);
+                responseContainer.style.display = 'block';
+            } catch (error) {
+                alert(`An error occurred: ${error.message}`);
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        });
+
+        document.getElementById('deleteStorageButton').addEventListener('click', async () => {
+            if (!confirm('Are you sure you want to delete the vector storage?')) {
+                return;
+            }
+
+            document.getElementById('loading').style.display = 'block';
+
+            try {
+                const response = await fetch('/delete-vector-storage', {
+                    method: 'POST'
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const responseData = await response.json();
+
+                const responseContainer = document.getElementById('responseContainer');
+                const responseText = document.getElementById('responseText');
+
+                responseText.textContent = JSON.stringify(responseData, null, 2);
+                responseContainer.style.display = 'block';
+                // alert(`Response: ${JSON.stringify(responseData)}`);
+            } catch (error) {
+                alert(`An error occurred: ${error.message}`);
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        });
+        function navigateTo(page) {
+            window.location.href = page;
+        }
+    </script>
+</body>
+
+</html>
