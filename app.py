@@ -30,7 +30,7 @@ VECTOR_STORAGE_PATH = "db"
 
 folder_path = "db"
 
-cached_llm = Ollama(model="git-gpt-v3")
+cached_llm = Ollama(model="llama3.2:3b")
 
 embedding = FastEmbedEmbeddings()
 
@@ -43,9 +43,9 @@ raw_prompt = PromptTemplate.from_template(
     <s>[INST]You are a knowledgeable and helpful AI assistant. 
             Based on the below context [/INST] </s>
     [INST]  Context: {context}
-            Answer the below question
+            Answer the below question in detail
+            Provide only the response in hindi language
             Question: {input}
-            Provide only the answer
     [/INST]
 """
 )
@@ -94,39 +94,52 @@ def aiPost():
     query = json_content.get("query")
     print(f"query: {query}")
 
-    if is_college_related(query):
-        return rag_query(query)
-    return normal_query(query)
+    # if is_college_related(query):
+    #     return rag_query(query)
+    # return normal_query(query)
+    return rag_query(query)
 
 
 @app.route("/pdf", methods=["POST"])
 def pdfPost():
-    file = request.files["file"]
-    file_name = file.filename
-    save_file = "pdf/" + file_name
-    file.save(save_file)
-    print(f"filename: {file_name}")
+    files = request.files.getlist("files")  # Retrieve multiple files from the request
+    response_data = []  # To store response data for each file
 
-    loader = PDFPlumberLoader(save_file)
-    docs = loader.load_and_split()
-    print(f"docs len={len(docs)}")
+    for file in files:
+        try:
+            file_name = file.filename
+            save_file = f"pdf/{file_name}"
+            file.save(save_file)
+            print(f"Saved file: {file_name}")
 
-    chunks = text_splitter.split_documents(docs)
-    print(f"chunks len={len(chunks)}")
+            loader = PDFPlumberLoader(save_file)
+            docs = loader.load_and_split()
+            print(f"Docs length for {file_name} = {len(docs)}")
 
-    vector_store = Chroma.from_documents(
-        documents=chunks, embedding=embedding, persist_directory=folder_path
-    )
+            chunks = text_splitter.split_documents(docs)
+            print(f"Chunks length for {file_name} = {len(chunks)}")
 
-    vector_store.persist()
+            vector_store = Chroma.from_documents(
+                documents=chunks, embedding=embedding, persist_directory=folder_path
+            )
 
-    response = {
-        "status": "Successfully Uploaded",
-        "filename": file_name,
-        "doc_len": len(docs),
-        "chunks": len(chunks),
-    }
-    return response
+            vector_store.persist()
+
+            response_data.append({
+                "filename": file_name,
+                "doc_len": len(docs),
+                "chunks": len(chunks),
+                "status": "Successfully Uploaded"
+            })
+        except Exception as e:
+            print(f"Error processing file {file.filename}: {e}")
+            response_data.append({
+                "filename": file.filename,
+                "status": "Failed",
+                "error": str(e)
+            })
+
+    return {"files": response_data}
 
 
 @app.route('/admin/')
@@ -167,21 +180,7 @@ def normal_query(query):
 def rag_query(query):
     print(f"RAG")
 
-    print("Loading vector store")
-    vector_store = Chroma(persist_directory=folder_path, embedding_function=embedding)
-
-    print("Creating chain")
-    retriever = vector_store.as_retriever(
-        search_type="similarity_score_threshold",
-        search_kwargs={
-            "k": 4,
-            "score_threshold": 0.2,
-        },
-    )
-
-    document_chain = create_stuff_documents_chain(cached_llm, raw_prompt)
-    chain = create_retrieval_chain(retriever, document_chain)
-
+    chain = loadChain()
     result = chain.invoke({"input": query})
 
     print(result)
@@ -194,6 +193,22 @@ def rag_query(query):
 
     response_answer = {"answer": result["answer"], "sources": sources}
     return response_answer["answer"]
+
+
+def loadChain():
+    print("Loading vector store")
+    vector_store = Chroma(persist_directory=folder_path, embedding_function=embedding)
+    print("Creating chain")
+    retriever = vector_store.as_retriever(
+        search_type="similarity_score_threshold",
+        search_kwargs={
+            "k": 10,
+            "score_threshold": 0.4,
+        },
+    )
+    document_chain = create_stuff_documents_chain(cached_llm, raw_prompt)
+    chain = create_retrieval_chain(retriever, document_chain)
+    return chain
 
 
 def is_college_related(query):
